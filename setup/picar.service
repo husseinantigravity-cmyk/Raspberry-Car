@@ -1,0 +1,17 @@
+[Unit]
+Description=My Pi Car — HUD Server (Node.js + Motor + Camera)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hupi
+WorkingDirectory=/home/hupi/My_pi_Car/server
+ExecStart=/usr/bin/node /home/hupi/My_pi_Car/server/index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,480 @@
+:root {
+    --glass-bg: rgba(0, 0, 0, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent-color: #00d2ff; /* Neon Cyan */
+    --accent-glow: 0 0 20px rgba(0, 210, 255, 0.5);
+    --joystick-orange: #ff9d00;
+    --orange-glow: 0 0 25px rgba(255, 157, 0, 0.4);
+    --text-color: #ffffff;
+    --panel-blur: 15px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    background-color: #0d0d12;
+}
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text-color);
+    touch-action: none;
+    background: url('../img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Background Video Overlay */
+#video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: transparent;
+}
+
+#fpv-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    mix-blend-mode: normal;
+}
+
+#fpv-video.hidden-video {
+    display: none;
+}
+
+/* Offline Status Styling */
+.status-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.status-overlay.hidden {
+    opacity: 0;
+}
+
+.status-message {
+    font-family: 'Amiri', 'serif';
+    font-size: 32px;
+    font-weight: 800;
+    color: #ff1744; /* Strong Red */
+    text-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 15px 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 23, 68, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: status-pulse 2s infinite ease-in-out;
+}
+
+@keyframes status-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.reconnect-btn {
+    margin-top: 15px;
+    padding: 10px 25px;
+    background: rgba(255, 23, 68, 0.2);
+    border: 1px solid #ff1744;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto; /* Gör den klickbar! */
+}
+
+.reconnect-btn:hover {
+    background: #ff1744;
+    box-shadow: 0 0 20px #ff1744;
+}
+
+.reconnect-btn:active {
+    transform: scale(0.95);
+}
+
+/* HUD elements */
+.hud-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--panel-blur));
+    -webkit-backdrop-filter: blur(var(--panel-blur));
+    border-radius: 50%;
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.top-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border-radius: 50%;
+    animation: neon-pulse-yellow 2s infinite ease-in-out;
+    border: 2px solid #ffea00;
+    box-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.top-btn:active {
+    background: #ffea00;
+    box-shadow: 0 0 30px #ffea00;
+    transform: scale(0.9) rotate(45deg);
+    color: black;
+}
+
+@keyframes neon-pulse-yellow {
+    0% { transform: scale(1); box-shadow: 0 0 10px #ffea00; }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px #ffea00; }
+    100% { transform: scale(1); box-shadow: 0 0 10px #ffea00; }
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.1) rotateX(20deg);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#hud-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--panel-blur));
+    -webkit-backdrop-filter: blur(var(--panel-blur));
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+}
+
+.top-telemetry {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    padding: 8px 25px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border-top: 1px solid var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    direction: rtl;
+}
+
+.stat span:first-child {
+    color: var(--accent-color);
+    text-shadow: var(--accent-glow);
+}
+
+/* Control Wrappers - RESTORED POSITIONS */
+.control-wrapper {
+    position: absolute;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+.control-label {
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.left { left: 10px; top: 22%; } /* Lifted up from 35% */
+.right { right: 10px; top: 18%; }
+
+/* Steering Wheel — Compact Premium Design */
+.wheel-element {
+    width: 175px; /* Minimized from 200px */
+    height: 175px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s linear;
+}
+
+.wheel-rim {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 20px solid #111;
+    background: radial-gradient(circle at center, #2a2a2a 0%, #050505 100%);
+    box-shadow: 
+        inset 0 0 15px #000,
+        0 0 25px var(--accent-color), /* VIBRANT NEON GLOW AT RIM */
+        0 0 5px var(--accent-color); /* Extra edge glow */
+    position: absolute;
+    z-index: 5;
+}
+
+.wheel-marker {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 25px;
+    background: var(--accent-color); /* Matches the cyan theme */
+    box-shadow: 0 0 20px var(--accent-color);
+    z-index: 10;
+    border-radius: 3px;
+}
+
+.inner-glow-ring {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--accent-color); /* BOLDER RING */
+    border-radius: 50%;
+    box-shadow: 
+        0 0 15px var(--accent-color), 
+        inset 0 0 10px var(--accent-color); /* INNER GLOW */
+    z-index: 7;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.wheel-spoke {
+    position: absolute;
+    background: #121212;
+    z-index: 4;
+    border: 1px solid rgba(0, 210, 255, 0.2); /* CYAN EDGES */
+}
+
+.wheel-spoke.left {
+    width: 50%; height: 48px; left: 0; top: 50%;
+    transform: translateY(-50%) rotate(-5deg);
+    border-radius: 12px 0 0 12px;
+}
+
+.wheel-spoke.right {
+    width: 50%; height: 48px; right: 0; top: 50%;
+    transform: translateY(-50%) rotate(5deg);
+    border-radius: 0 12px 12px 0;
+}
+
+.wheel-spoke.bottom-l {
+    width: 35px; height: 50%; bottom: 5px; left: 35%;
+    transform: translateX(-50%) rotate(20deg);
+}
+
+.wheel-spoke.bottom-r {
+    width: 35px; height: 50%; bottom: 5px; right: 35%;
+    transform: translateX(50%) rotate(-20deg);
+}
+
+.wheel-center {
+    width: 105px;
+    height: 105px;
+    background: #000;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color); /* GLOWING CENTER */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 8;
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
+.center-cap {
+    width: 85px;
+    height: 85px;
+    background: radial-gradient(circle at 35% 35%, #222 0%, #000 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--accent-color);
+}
+
+.logo-text {
+    font-size: 16px;
+    font-weight: 900;
+    font-family: 'Amiri', 'Orbitron', sans-serif; /* Arabic font preference */
+    color: var(--accent-color);
+    text-shadow: 0 0 15px var(--accent-color);
+    letter-spacing: 0;
+}
+
+.center-decor {
+    width: 30px;
+    height: 2px;
+    background: var(--accent-color);
+    margin-top: 5px;
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+/* Pedals */
+#pedals-container {
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pedal {
+    position: relative;
+    width: 70px;
+    height: 110px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.pedal-face {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #222, #111);
+    border: 3px solid #444;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    box-shadow: 
+        inset 0 0 15px #000,
+        0 6px 0 #000,
+        0 10px 20px rgba(0,0,0,0.5);
+    transform: rotateX(25deg);
+    transition: all 0.1s ease;
+    overflow: hidden;
+    gap: 7px;
+}
+
+.speed-segment {
+    width: 85%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.1s ease;
+}
+
+.gas .speed-segment.active { background: #ff9100; box-shadow: 0 0 15px #ff9100; }
+.brake .speed-segment.active { background: #ff1744; box-shadow: 0 0 15px #ff1744; }
+
+.pedal-face .label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #666;
+    margin-top: 5px;
+}
+
+.pedal:active .pedal-face {
+    transform: rotateX(10deg);
+    box-shadow: 0 2px 0 #000;
+}
+
+.gas .pedal-face { border-color: #ff9100; }
+.brake .pedal-face { border-color: #ff1744; }
+
+/* Action Buttons — Moved up to avoid clipping */
+.action-buttons {
+    position: absolute;
+    bottom: 75px; /* Increased from 50px to avoid bottom edge */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.action-btn {
+    width: 65px;
+    height: 65px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--accent-color);
+    background: var(--glass-bg);
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.action-btn.active {
+    background: var(--accent-color);
+    box-shadow: var(--accent-glow);
+    color: black;
+}
+
+.action-btn .icon { font-size: 18px; }
+.action-btn .label { font-size: 10px; margin-top: 2px; }
+
+/* Nipplejs */
+.nipple .back {
+    background: rgba(0, 243, 255, 0.05) !important;
+    border: 2px solid rgba(0, 243, 255, 0.2) !important;
+}
+
+.nipple .front {
+    background: var(--joystick-orange) !important;
+    box-shadow: var(--orange-glow) !important;
+}
