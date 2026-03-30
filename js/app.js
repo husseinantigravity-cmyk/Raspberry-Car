@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
         horn: false
     };
 
+    // --- Audio setup ---
+    const hornSound = new Audio('audio/horn.mp3');
+    hornSound.loop = true;
+
     let isCarOnline = false; // NEW: Track if we actually have a car connection
 
     // UI state for display only
@@ -47,12 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
         controlState.horn = true;
         btnHorn.classList.add('active');
         sendCommand({ type: 'horn', value: true });
+        
+        // Start playing horn sound on phone
+        hornSound.currentTime = 0;
+        hornSound.play().catch(e => console.log("Ljud kunde inte spelas: ", e));
     };
 
     const stopHorn = () => {
         controlState.horn = false;
         btnHorn.classList.remove('active');
         sendCommand({ type: 'horn', value: false });
+        
+        // Stop playing horn sound
+        hornSound.pause();
     };
 
     btnHorn.addEventListener('mousedown', startHorn);
