@@ -277,26 +277,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startDriveTimer() {
-        if (!drivingStartTime) {
+        if (!driveTimerInterval) {
             drivingStartTime = Date.now();
             const timeEl = document.getElementById('drive-time');
-            if(timeEl) timeEl.innerText = "00:00:00";
             if (driveTimerInterval) clearInterval(driveTimerInterval);
+            
             driveTimerInterval = setInterval(() => {
+                if (!drivingStartTime) return;
                 const elapsedSeconds = Math.floor((Date.now() - drivingStartTime) / 1000);
                 if(timeEl) timeEl.innerText = formatTime(elapsedSeconds);
             }, 1000);
+            console.log("Timer started at: " + drivingStartTime);
         }
     }
 
     function stopDriveTimer() {
-        drivingStartTime = null;
         if (driveTimerInterval) {
             clearInterval(driveTimerInterval);
             driveTimerInterval = null;
         }
+        drivingStartTime = null;
         const timeEl = document.getElementById('drive-time');
         if(timeEl) timeEl.innerText = "00:00:00";
+        console.log("Timer stopped");
     }
 
     function showOffline() {
