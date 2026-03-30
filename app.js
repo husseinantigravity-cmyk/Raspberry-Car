@@ -267,37 +267,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let videoWatchdog;
 
     let drivingStartTime = null;
-    let driveTimerInterval = null;
 
     function formatTime(seconds) {
         const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
         const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
+        const s = (Math.floor(seconds) % 60).toString().padStart(2, '0');
+        return h + ":" + m + ":" + s;
     }
 
-    // Timer Logic - Always running heartbeat
-    setInterval(() => {
+    function updateHUD() {
         if (isCarOnline && drivingStartTime) {
-            const elapsedSeconds = Math.floor((Date.now() - drivingStartTime) / 1000);
+            const elapsed = Math.floor((Date.now() - drivingStartTime) / 1000);
             const timeEl = document.getElementById('drive-time');
-            if (timeEl) timeEl.innerText = formatTime(elapsedSeconds);
+            if (timeEl) timeEl.innerText = formatTime(elapsed);
         }
-    }, 1000);
+    }
+
+    // Update timer every second independently
+    setInterval(updateHUD, 1000);
 
     function showOffline() {
-        console.log("HUD Offline: No car detected");
-        isCarOnline = false;
-        drivingStartTime = null;
-        statusOverlay.classList.remove('hidden');
-        fpvVideo.classList.add('hidden-video');
-        const timeEl = document.getElementById('drive-time');
-        if (timeEl) timeEl.innerText = "00:00:00";
+        if (isCarOnline) {
+            console.log("HUD Offline");
+            isCarOnline = false;
+            drivingStartTime = null;
+            statusOverlay.classList.remove('hidden');
+            fpvVideo.classList.add('hidden-video');
+            const timeEl = document.getElementById('drive-time');
+            if (timeEl) timeEl.innerText = "00:00:00";
+        }
     }
 
     function showOnline() {
         if (!isCarOnline) {
-            console.log("HUD Online: Car connected!");
+            console.log("HUD Online");
             isCarOnline = true;
             drivingStartTime = Date.now();
             statusOverlay.classList.add('hidden');
