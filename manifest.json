@@ -1,6 +1,6 @@
 {
-  "name": "My Pi Car - FPV Cockpit",
-  "short_name": "My Pi Car",
+  "name": "قمرة قيادة سيارة FPV",
+  "short_name": "سيارة FPV",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0d0d12",
