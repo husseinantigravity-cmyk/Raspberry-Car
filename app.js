@@ -276,47 +276,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${h}:${m}:${s}`;
     }
 
-    function startDriveTimer() {
-        if (!driveTimerInterval) {
-            drivingStartTime = Date.now();
+    // Timer Logic - Always running heartbeat
+    setInterval(() => {
+        if (isCarOnline && drivingStartTime) {
+            const elapsedSeconds = Math.floor((Date.now() - drivingStartTime) / 1000);
             const timeEl = document.getElementById('drive-time');
-            if (driveTimerInterval) clearInterval(driveTimerInterval);
-            
-            driveTimerInterval = setInterval(() => {
-                if (!drivingStartTime) return;
-                const elapsedSeconds = Math.floor((Date.now() - drivingStartTime) / 1000);
-                if(timeEl) timeEl.innerText = formatTime(elapsedSeconds);
-            }, 1000);
-            console.log("Timer started at: " + drivingStartTime);
+            if (timeEl) timeEl.innerText = formatTime(elapsedSeconds);
         }
-    }
-
-    function stopDriveTimer() {
-        if (driveTimerInterval) {
-            clearInterval(driveTimerInterval);
-            driveTimerInterval = null;
-        }
-        drivingStartTime = null;
-        const timeEl = document.getElementById('drive-time');
-        if(timeEl) timeEl.innerText = "00:00:00";
-        console.log("Timer stopped");
-    }
+    }, 1000);
 
     function showOffline() {
         console.log("HUD Offline: No car detected");
         isCarOnline = false;
+        drivingStartTime = null;
         statusOverlay.classList.remove('hidden');
         fpvVideo.classList.add('hidden-video');
-        stopDriveTimer();
+        const timeEl = document.getElementById('drive-time');
+        if (timeEl) timeEl.innerText = "00:00:00";
     }
 
     function showOnline() {
         if (!isCarOnline) {
             console.log("HUD Online: Car connected!");
             isCarOnline = true;
+            drivingStartTime = Date.now();
             statusOverlay.classList.add('hidden');
             fpvVideo.classList.remove('hidden-video');
-            startDriveTimer();
         }
     }
 
