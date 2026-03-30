@@ -438,7 +438,7 @@ body {
 /* Action Buttons — Moved up to avoid clipping */
 .action-buttons {
     position: absolute;
-    bottom: 75px; /* Increased from 50px to avoid bottom edge */
+    bottom: 25px; /* Sänkt från 75px för att hamna närmare botten på iPhone */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
