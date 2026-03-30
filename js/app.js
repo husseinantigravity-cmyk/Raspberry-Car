@@ -251,24 +251,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- COMMUNICATION (WebSocket Logic) ---
     // Nu använder vi den fasta adressen från config.js!
-    const PI_URL = `wss://${CONFIG.CAR_URL}`;
+    // Smart anslutning: Använder bilens lokala IP om vi är på samma nätverk, eller ngrok om vi är ute på nätet!
+    // Smart anslutning: Om vi är på GitHub (.github.io), använder vi ngrok-länken från config.js.
+    // Annars (vid Wi-Fi hemma) använder vi bilens lokala IP-adress direkt.
+    let PI_URL;
+    if (window.location.host.includes('.github.io')) {
+        PI_URL = `wss://${CONFIG.CAR_URL}`;
+    } else {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        PI_URL = `${protocol}//${window.location.host}`;
+    }
     const fpvVideo = document.getElementById('fpv-video');
     const statusOverlay = document.getElementById('status-overlay');
     const btnReconnect = document.getElementById('btn-reconnect');
     let videoWatchdog;
 
+    let drivingStartTime = null;
+
+    function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (Math.floor(seconds) % 60).toString().padStart(2, '0');
+        return h + ":" + m + ":" + s;
+    }
+
+    function updateHUD() {
+        if (isCarOnline && drivingStartTime) {
+            const elapsed = Math.floor((Date.now() - drivingStartTime) / 1000);
+            const timeEl = document.getElementById('drive-time');
+            if (timeEl) timeEl.innerText = formatTime(elapsed);
+        }
+    }
+
+    // Update timer every second independently
+    setInterval(updateHUD, 1000);
+
     function showOffline() {
-        console.log("HUD Offline: No car detected");
-        isCarOnline = false;
-        statusOverlay.classList.remove('hidden');
-        fpvVideo.classList.add('hidden-video');
+        if (isCarOnline) {
+            console.log("HUD Offline");
+            isCarOnline = false;
+            drivingStartTime = null;
+            statusOverlay.classList.remove('hidden');
+            fpvVideo.classList.add('hidden-video');
+            const timeEl = document.getElementById('drive-time');
+            if (timeEl) timeEl.innerText = "00:00:00";
+        }
     }
 
     function showOnline() {
-        console.log("HUD Online: Car connected!");
-        isCarOnline = true;
-        statusOverlay.classList.add('hidden');
-        fpvVideo.classList.remove('hidden-video');
+        if (!isCarOnline) {
+            console.log("HUD Online");
+            isCarOnline = true;
+            drivingStartTime = Date.now();
+            statusOverlay.classList.add('hidden');
+            fpvVideo.classList.remove('hidden-video');
+        }
     }
 
     // Initialize as offline
@@ -319,8 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     try {
                         const data = JSON.parse(event.data);
                         if (data.type === 'telemetry') {
-                            if (data.battery) document.getElementById('battery-val').innerText = data.battery + '%';
-                            if (data.fps) document.getElementById('fps-val').innerText = data.fps;
+                            // Förberett för AD-omvandlaren:
+                            if (data.battery !== undefined) {
+                                document.getElementById('battery-val').innerText = data.battery + '%';
+                            }
                         }
                     } catch (e) {}
                 }
@@ -373,12 +412,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 50); // 20 times per second
 
-    // Update Telemetry
-    setInterval(() => {
-        if (hudVisible) {
-            document.getElementById('latency-val').innerText = Math.floor(Math.random() * 20 + 30) + ' ms';
-            document.getElementById('fps-val').innerText = '30';
-            document.getElementById('battery-val').innerText = '82';
-        }
-    }, 1000);
+    // Telemetri hanteras nu asynkront via AD-omvandlaren/servern!
 });
