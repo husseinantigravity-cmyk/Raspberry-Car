@@ -365,11 +365,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     try {
-                        const data = JSON.parse(event.data);
                         if (data.type === 'telemetry') {
-                            // Förberett för AD-omvandlaren:
+                            // Update battery % if available
                             if (data.battery !== undefined) {
                                 document.getElementById('battery-val').innerText = data.battery + '%';
+                            }
+                            
+                            // Check for under-voltage warning
+                            const warningOverlay = document.getElementById('warning-overlay');
+                            if (data.warning === 'LOW_VOLTAGE') {
+                                warningOverlay.classList.remove('hidden');
+                            } else {
+                                warningOverlay.classList.add('hidden');
                             }
                         }
                     } catch (e) {}
