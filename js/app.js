@@ -340,8 +340,16 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             socket.onclose = () => {
-                console.log('--- TUNNEL CLOSED ---');
                 showOffline();
+                // 🚀 SMART FIX: If we lose connection suddenly, show the Low Voltage warning 
+                // because WiFi usually dies first when power is low.
+                const warningOverlay = document.getElementById('warning-overlay');
+                if (warningOverlay) {
+                    warningOverlay.classList.remove('hidden');
+                    document.body.classList.add('low-voltage-mode');
+                }
+                
+                setTimeout(connect, 3000);
             };
 
             socket.onerror = (e) => {
