@@ -365,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     try {
+                        const data = JSON.parse(event.data);
                         if (data.type === 'telemetry') {
                             // Update battery % if available
                             if (data.battery !== undefined) {
@@ -375,8 +376,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const warningOverlay = document.getElementById('warning-overlay');
                             if (data.warning === 'LOW_VOLTAGE') {
                                 warningOverlay.classList.remove('hidden');
+                                document.body.classList.add('low-voltage-mode');
                             } else {
                                 warningOverlay.classList.add('hidden');
+                                document.body.classList.remove('low-voltage-mode');
                             }
                         }
                     } catch (e) {}
