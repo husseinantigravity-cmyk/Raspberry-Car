@@ -335,25 +335,16 @@ document.addEventListener('DOMContentLoaded', () => {
             socket.binaryType = 'arraybuffer';
             
             socket.onopen = () => {
-                console.log('--- CONNECTED TO TUNNEL ---');
-                socket.send(JSON.stringify({ type: 'info', value: 'HUD connected' }));
+                console.log('--- TUNNEL OPEN ---');
+                showOnline();
             };
 
             socket.onclose = () => {
                 showOffline();
-                // 🚀 SMART FIX: If we lose connection suddenly, show the Low Voltage warning 
-                // because WiFi usually dies first when power is low.
-                const warningOverlay = document.getElementById('warning-overlay');
-                if (warningOverlay) {
-                    warningOverlay.classList.remove('hidden');
-                    document.body.classList.add('low-voltage-mode');
-                }
-                
                 setTimeout(connect, 3000);
             };
 
             socket.onerror = (e) => {
-                console.warn('Ej kontakt med bilen.');
                 showOffline();
             };
 
@@ -378,18 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Update battery % if available
                             if (data.battery !== undefined) {
                                 document.getElementById('battery-val').innerText = data.battery + '%';
-                            }
-                            
-                            // Check for under-voltage warning
-                            const warningOverlay = document.getElementById('warning-overlay');
-                            if (warningOverlay) {
-                                if (data.warning === 'LOW_VOLTAGE') {
-                                    warningOverlay.classList.remove('hidden');
-                                    document.body.classList.add('low-voltage-mode');
-                                } else {
-                                    warningOverlay.classList.add('hidden');
-                                    document.body.classList.remove('low-voltage-mode');
-                                }
                             }
                         }
                     } catch (e) {}
