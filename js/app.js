@@ -374,12 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             
                             // Check for under-voltage warning
                             const warningOverlay = document.getElementById('warning-overlay');
-                            if (data.warning === 'LOW_VOLTAGE') {
-                                warningOverlay.classList.remove('hidden');
-                                document.body.classList.add('low-voltage-mode');
-                            } else {
-                                warningOverlay.classList.add('hidden');
-                                document.body.classList.remove('low-voltage-mode');
+                            if (warningOverlay) {
+                                if (data.warning === 'LOW_VOLTAGE') {
+                                    warningOverlay.classList.remove('hidden');
+                                    document.body.classList.add('low-voltage-mode');
+                                } else {
+                                    warningOverlay.classList.add('hidden');
+                                    document.body.classList.remove('low-voltage-mode');
+                                }
                             }
                         }
                     } catch (e) {}
