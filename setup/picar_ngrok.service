@@ -1,0 +1,11 @@
+[Unit]
+Description=My Pi Car Ngrok Tunnel
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ngrok http --url=https://nonconterminal-maeve-subopaquely.ngrok-free.dev 3005
+Restart=always
+User=hupi
+
+[Install]
+WantedBy=multi-user.target

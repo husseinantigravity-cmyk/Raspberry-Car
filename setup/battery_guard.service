@@ -1,0 +1,18 @@
+[Unit]
+Description=Raspberry Pi Low-Voltage Guardian (Shutdown on Low Battery)
+After=network.target
+
+[Service]
+Type=simple
+User=hupi
+# Ersätt med den korrekta sökvägen till din projektmapp
+WorkingDirectory=/home/hupi/My_pi_Car/setup
+ExecStart=/usr/bin/python3 /home/hupi/My_pi_Car/setup/battery_guard.py
+Restart=always
+RestartSec=10
+# Se till att utmatningen hamnar i systemloggen: journalctl -u battery_guard.service
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

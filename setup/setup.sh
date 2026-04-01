@@ -40,12 +40,21 @@ cd ~/My_pi_Car/server
 npm install express ws
 echo -e "${GREEN}✅ Node-paket installerade!${NC}"
 
+# 6. Setup Battery Guard Service
+echo -e "${YELLOW}--- KONFIGURERAR BATTERIVAKT (Guardian) ---${NC}"
+sudo cp ~/My_pi_Car/setup/battery_guard.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable battery_guard.service
+sudo systemctl start battery_guard.service
+echo -e "${GREEN}✅ Batterivakt installerad och startad!${NC}"
+
 echo -e "
 ╔══════════════════════════════════════════════╗
 ║              SETUP KLART! 🏎️💨                ║
 ║                                              ║
 ║  1. Starta om Pi:n: sudo reboot              ║
-║  2. Efter start, kör servern:                ║
+║  2. Batterivakt körs nu i bakgrunden.        ║
+║  3. Efter start, kör servern:                ║
 ║     cd ~/My_pi_Car/server                    ║
 ║     node index.js                            ║
 ╚══════════════════════════════════════════════╝

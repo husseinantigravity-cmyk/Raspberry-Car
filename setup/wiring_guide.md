@@ -12,7 +12,7 @@ För att din **My Pi Car** ska kunna rulla behöver du koppla ihop din Raspberry
 | **IN3** | **GPIO 22 (Pin 15)** | Frame Motor (Höger) | Blå |
 | **IN4** | **GPIO 23 (Pin 16)**   Frame Motor (Vänster) | Lila |
 | **ENB** | **GPIO 13 (Pin 33)** | Frame Motor (Hastighet/PWM) | Grå |
-| **LAMP** | **GPIO 26 (Pin 37)** | Positiv pol till LED-halvljus | Vit |
+| **LAMP** | **GPIO 18 (Pin 12)** | Positiv pol till LED-halvljus | Vit |
 | **GND** | **GND (Pin 6/9/14)** | Gemensam jord mellan Pi & L298N | **Svart** |
 
 ---
