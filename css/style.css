@@ -522,24 +522,3 @@ body {
 .hidden {
     display: none !important;
 }
-
-/* LOW VOLTAGE MODE - UI PANIC STATE */
-body.low-voltage-mode #hud-controls,
-body.low-voltage-mode #toggle-hud {
-    display: none !important;
-}
-
-body.low-voltage-mode #status-overlay {
-    display: flex !important;
-    opacity: 1 !important;
-}
-
-body.low-voltage-mode #warning-overlay {
-    top: 30%; /* Move it closer to center for better visibility */
-}
-
-body.low-voltage-mode #status-overlay .status-message {
-    border-color: #ff9100; /* Change to orange to differentiate from pure offline red */
-    animation: none;
-    background: rgba(0, 0, 0, 0.7);
-}
